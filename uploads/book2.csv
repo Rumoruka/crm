@@ -1,0 +1,4 @@
+FirstName,LastName,password,CountryID,email,Phone,campaignID,subCampaign,curency(USD)
+Juan2,Test,123456789password,120,test2test@teserBOBA.com,+3647890,67,testId2,USD
+Juan3,Test,123456789password,223,test3test@teserBOBA.com,+3647890,67,testId3,USD
+Juan4,Test,123456789password,39,test4test@teserBOBA.com,+3647890,67,testId4,USD

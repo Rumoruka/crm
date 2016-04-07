@@ -1,0 +1,8 @@
+[04.04.2016 21:11:10] A.M Estrada: Another broker with Phase 1
+[04.04.2016 21:11:17] A.M Estrada: API Username: expertaffnetwork_10461
+API Password: BunaK8detHeth
+---------------------------------------
+API URL: http://api.bdb.io
+---------------------------------------
+User is also valid for API documentation found at:
+http://bdb.technology/api-documentation/

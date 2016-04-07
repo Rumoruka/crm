@@ -1,0 +1,28 @@
+We need to get information back from the brokers regarding the lead status.
+This means that from the API access we can get information like registration date, deposit date, 
+deposit amount, deposit count, total deposit amount, last call date, withdrawal date, withdrawal amount, 
+total withdrawal count, total withdrawal amount.
+Along with name, last name, customer ID, email, phone number, sub campaign.
+So is like doing everything backwards to collect more information
+And this information needs to be stored and updated every day
+Phase 2:
+We need to be able to get the information back from the brokers,
+ if possible a way to export this data or to display a report per broker. 
+Customer ID
+Name + Last Name
+Email
+Phone number
+Country
+Currency
+Registration date
+Last contact date
+Verified customer
+If the customer deposit or didn't deposit
+First deposit date
+First deposit amount
+Total deposits count
+Total amount deposited.
+If the customer made a withdrawal or not
+Total Withdrawal count
+Total Withdrawal amount
+Broker from where we are getting the information.
