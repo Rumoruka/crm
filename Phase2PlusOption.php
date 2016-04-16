@@ -5,7 +5,7 @@ require_once ('db.php');
 // function to send curl requests
 function sendCurl($apiData) {
     
-    $URL = 'http://api-spotplatform.plustocks.com/api';
+    $URL = 'http://api-spotplatform.plusoption.com/api';
 
     $ch = curl_init($URL);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -21,65 +21,8 @@ function sendCurl($apiData) {
 
 // array for curl request
 $apiData = array(
-    'api_username' => 'ExpertAffNetwork',
-    'api_password' => 'm9IvX94tYk',
-    'MODULE' => 'Lead',
-    'COMMAND' => 'view'
-);
-
-// get the information about cutomers
-$result = sendCurl($apiData);
-
-// turn $result into SimpleXMLElement object and turn $xml into ordinary array
-$xml = new SimpleXMLElement($result);
-$array = json_decode(json_encode($xml), true);
-
-$leads = $array['Lead'];
-$amount = count($leads);
-
-// get information on each customer
-for ($i = 0; $i < $amount; $i++) {
-    
-    // each customer is stored in fields with names like data_0, data_1 ...
-    // so this is how we get each customer
-    $lead = $leads["data_$i"];
-    
-    $id = $lead['id'];
-    $FirstName = $lead['FirstName'];
-    $LastName = $lead['LastName'];
-    $email = $lead['email'];
-    $phone = $lead['Phone'];
-    $Country = $lead['Country'];
-    $regTime = $lead['regTime'];
-    $subCampaignParam = $lead['subCampaignParam'];
-    $lastTimeActive = $lead['lastTimeActive'];
-    $saleStatus = $lead['saleStatus'];
-    $leadStatus = $lead['leadStatus'];
-    $emInCharge = $lead['employeeInChargeId'];
-       
-    $time = strtotime($lastTimeActive);
-    $date = date("Y-m-d H:i:s", $time);
-    $time = strtotime($regTime);
-    $regDate = date("Y-m-d H:i:s", $time);
-
-    echo "New record created: " . $id . " - " . $FirstName . " - " . $LastName . " - " . $email . " - " . $phone . " - " . $Country . " - " . $regTime . " - " . $subCampaignParam . " - " . $saleStatus . "<br />";
-    $query = "INSERT INTO customers (id, FirstName, LastName, email, phone, Country, regTime, subCampaign, lastTimeActive, saleStatus, leadStatus, employeeInCharge)
-    VALUES ('$id', '$FirstName', '$LastName', '$email', '$phone', '$Country', '$regDate', '$subCampaignParam', '$date', '$saleStatus', '$leadStatus', '$emInCharge')";
-      /*  
-    if ( $mysqli->query($query) === TRUE ) {
-            
-    echo 'New record created:' . $id . ',' . $FirstName . ',' . $LastName . "<br />";
-            
-    } else {
-            
-        echo "Error: " . $query . "<br />" . $mysqli->error . "<br />";
-    }*/
-}
-
-// array for curl request
-$apiData = array(
-    'api_username' => 'ExpertAffNetwork',
-    'api_password' => 'm9IvX94tYk',
+    'api_username' => 'expertaffnetwork',
+    'api_password' => 'd9URo2q7Mb',
     'MODULE' => 'Customer',
     'COMMAND' => 'view'
 );
@@ -102,7 +45,10 @@ for ($i = 0; $i < $amount; $i++) {
     $customer = $customers["data_$i"];
     
     $id = $customer['id'];
-
+    
+    // check if the customer is Lead or not, if not, continue, 
+    // if yes - we output that 
+    if ($customer['isLead'] == 0) {
 //---------------------------  WITHDRAWALS ----------------------------//
         // prepare new list to get information on customer withdrawals
         $apiData = array(
@@ -140,10 +86,9 @@ for ($i = 0; $i < $amount; $i++) {
                 $widthDate = $width['requestTime'];
                 $widthAmount = $width['amount'];
                 $widthStatus = $width['status'];
-                $widthConfirmTime = $width['confirmTime'];
                 
                 // prepare query to insert into DB
-                $query = "INSERT INTO withdrawals (id, withdrawal_date, withdrawal_amount, withdrawal_status, widthConfirmTime) VALUES ('$id', '$widthDate', '$widthAmount', '$widthStatus', $widthConfirmTime)";
+                $query = "INSERT INTO withdrawals (id, withdrawal_date, withdrawal_amount, withdrawal_status) VALUES ('$id', '$widthDate', '$widthAmount', '$widthStatus')";
                 
                 // try to complete the query
                 if ( $mysqli->query($query) === TRUE ) {
@@ -194,10 +139,9 @@ for ($i = 0; $i < $amount; $i++) {
                 $depDate = $dep['requestTime'];
                 $depAmount = $dep['amount'];
                 $depStatus = $dep['Status'];
-                $depConfirmTime = $dep['confirmTime'];
                 
                 // prepare query to insert into DB
-                $query = "INSERT INTO deposits (id, deposit_date, deposit_amount, deposit_status, depConfirmTime) VALUES ('$id', '$depDate', '$depAmount', '$depStatus', $depConfirmTime)";
+                $query = "INSERT INTO deposits (id, deposit_date, deposit_amount, deposit_status) VALUES ('$id', '$depDate', '$depAmount', '$depStatus')";
                 
                 // try to complete the query
                 if ( $mysqli->query($query) === TRUE ) {
@@ -211,6 +155,8 @@ for ($i = 0; $i < $amount; $i++) {
             }
         }
 
+        echo $customer['id'] . " - " . $customer['FirstName'] . " - " . $customer['LastName'] . " - " . $customer['email'] . " - " . $customer['phone'] . " - " . $customer['Country'] . " - " . $customer['currency'] . " - " . $customer['regTime'] . " - " . $customer['subCampaignParam'] . " - " . ($CustomerDeposits == 0 ? "No depposits" : "Has Deposits") . " - " . ($CustomerWithdrawals == 0 ? "No withdrawals" : "Has withdrawals") . " - " . $customer['lastTimeActive'] . "<br />";
+        
         $id = $customer['id'];
         $FirstName = $customer['FirstName'];
         $LastName = $customer['LastName'];
@@ -224,23 +170,22 @@ for ($i = 0; $i < $amount; $i++) {
         $saleStatus = $customer['saleStatus'];
         $leadStatus = $customer['leadStatus'];
         $balance = $customer['accountBalance'];
-        $emInCharge = $customer['employeeInChargeId'];
-        $isLead = $customer['isLead'];
         
         $time = strtotime($lastTimeActive);
         $date = date("Y-m-d H:i:s", $time);
-        $time = strtotime($regTime);
-        $regDate = date("Y-m-d H:i:s", $time);
-    echo "New record created: " . $id . " - " . $FirstName . " - " . $LastName . " - " . $email . " - " . $phone . " - " . $Country . " - " . $currency . " - " . $regTime . " - " . $subCampaignParam . " - " . ($CustomerDeposits == 0 ? "No depposits" : "Has Deposits") . " - " . ($CustomerWithdrawals == 0 ? "No Withdrawals" : "Has Withdrawals") . " - " . $saleStatus . "<br />";
-        $query = "INSERT INTO customers (id, FirstName, LastName, email, phone, Country, currency, regTime, subCampaign, hasDeposits, hasWithdrawals, lastTimeActive, saleStatus, leadStatus, balance, employeeInCharge, isLead)
-        VALUES ('$id', '$FirstName', '$LastName', '$email', '$phone', '$Country', '$currency', '$regDate', '$subCampaignParam', '$CustomerDeposits', '$CustomerWithdrawals', '$date', '$saleStatus', '$leadStatus', '$balance', '$emInCharge', '$isLead')";
         /*
+        $query = "INSERT INTO customers (id, FirstName, LastName, email, phone, Country, currency, regTime, subCampaign, hasDeposits, hasWithdrawals, lastTimeActive, saleSatus, leadStatus, balance)
+        VALUES ('$id', '$FirstName', '$LastName', '$email', '$phone', '$Country', '$currency', '$regTime', '$subCampaignParam', '$CustomerDeposits', '$CustomerWithdrawals', '$date', '$saleSatus', '$leadStatus', '$balance')";
+        
         if ( $mysqli->query($query) === TRUE ) {
             
-            echo 'New record created:' . $id . ',' . $FirstName . ',' . $LastName . "<br />";
+            echo 'New record created: $id, $customer["FirstName"], $customer["LastName"]' . "<br />";
             
         } else {
             
             echo "Error: " . $query . "<br />" . $mysqli->error . "<br />";
         }*/
+    } else {
+        echo "Is Lead <br />";
     }
+}

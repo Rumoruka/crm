@@ -1,5 +1,5 @@
 <?php
-error_reporting (0);
+//error_reporting (0);
 $file = $_FILES['uploadedfile']['name']; //get posted csv file
 $tmp = $_FILES['uploadedfile']['tmp_name']; 
 $path = 'uploads/';
@@ -23,18 +23,28 @@ $URL = "https://api.optionsxo.com/api/marketeer/customer/registerTrader";
 for ($i = 0; $i < $rows; $i++) {
     
     $array = $data[$i]; //getting ich of the rows in csv
+    
+    //replace the whitespaces by underlines
+    //because OPtionsXO preg match doesn't let the names 
+    //with whitespaces to pass through
+    $firstName = preg_replace('/ /', '_', $array[0]);
+    $lastName = preg_replace('/ /', '_', $array[1]);
+    /*
+    echo $array[0] . " - " . $firstName . "<br />";
+    echo $array[1] . " - " . $lastName . "<br />";
+    */
+    //prepare request
     $apiData = array(
         'affiliateUserName' => 'expertaffnetwor',
         'affiliatePassword' => 'DwqH1l5x',
         'trackingCode' => '2215',
-        'userName' => "$array[0]",
-        'firstName' => "$array[1]",
-        'lastName' => "$array[2]",
-        'email' => "$array[3]",
-        'phoneNumber' => "$array[4]",
-        'countryId' => "$array[5]",
-        'currencyId' => "$array[6]",
-        'Param1' => "$array[7]"
+        'firstName' => "$firstName",
+        'lastName' => "$lastName",
+        'email' => "$array[2]",
+        'phoneNumber' => "$array[3]",
+        'countryId' => "$array[4]",
+        'currencyId' => "$array[5]",
+        'param1' => "$array[6]"
         );
     //print_r($apiData);
     //prepare the request
@@ -56,4 +66,3 @@ for ($i = 0; $i < $rows; $i++) {
     //close connection
     curl_close($ch);
 }
-

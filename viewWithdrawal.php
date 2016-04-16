@@ -5,7 +5,7 @@ $apiData = array(
     'api_password' => 'm9IvX94tYk',
     'MODULE' => 'CustomerDeposits',
     'COMMAND' => 'view',
-    'FILTER[id]' => '127909'
+    'FILTER[id]' => '127532'
 );
 
 $URL = 'http://api-spotplatform.plustocks.com/api';
